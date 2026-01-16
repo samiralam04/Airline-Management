@@ -30,6 +30,18 @@ public class FlightController {
         return flightRepository.findAll();
     }
 
+    @GetMapping("/search")
+    public List<Flight> searchFlights(@RequestParam String origin,
+            @RequestParam String destination,
+            @RequestParam String date) {
+        // Parse date (yyyy-MM-dd)
+        java.time.LocalDate localDate = java.time.LocalDate.parse(date);
+        java.time.LocalDateTime start = localDate.atStartOfDay();
+        java.time.LocalDateTime end = localDate.atTime(java.time.LocalTime.MAX);
+
+        return flightRepository.findFlights(origin, destination, start, end);
+    }
+
     @GetMapping("/{id}")
     public ResponseEntity<Flight> getFlightById(@PathVariable Long id) {
         return flightRepository.findById(id)

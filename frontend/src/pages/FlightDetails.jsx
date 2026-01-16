@@ -1,10 +1,11 @@
 import React, { useState, useEffect } from "react";
-import { useParams, Link } from "react-router-dom";
+import { useParams, Link, useLocation } from "react-router-dom";
 import FlightService from "../services/flight.service";
 import AuthService from "../services/auth.service";
 
 const FlightDetails = () => {
     const { id } = useParams();
+    const location = useLocation();
     const [flight, setFlight] = useState(null);
     const [weather, setWeather] = useState(null);
     const [risk, setRisk] = useState(null);
@@ -152,7 +153,7 @@ const FlightDetails = () => {
                                 Book Now
                             </Link>
                         ) : (
-                            <Link to="/login" className="text-blue-600 hover:underline">Log in to book this flight</Link>
+                            <Link to="/login" state={{ from: location }} className="text-blue-600 hover:underline">Log in to book this flight</Link>
                         )}
                     </div>
 

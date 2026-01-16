@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import AuthService from "../services/auth.service";
 
 const Login = () => {
@@ -8,6 +8,7 @@ const Login = () => {
     const [loading, setLoading] = useState(false);
     const [message, setMessage] = useState("");
     const navigate = useNavigate();
+    const location = useLocation();
 
     const handleLogin = (e) => {
         e.preventDefault();
@@ -16,16 +17,7 @@ const Login = () => {
 
         AuthService.login(username, password).then(
             () => {
-                navigate("/");
-                window.location.reload();
-            },
-            (error) => {
-                const resMessage =
-                    (error.response &&
-                        error.response.data &&
-                        error.response.data.message) ||
-                    error.message ||
-                    error.toString();
+                error.toString();
 
                 setLoading(false);
                 setMessage(resMessage);
