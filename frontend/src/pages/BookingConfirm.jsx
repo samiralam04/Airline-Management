@@ -5,6 +5,7 @@ import "jspdf-autotable";
 import { generateTicketPDF } from "../utils/pdfUtils";
 import { QRCodeSVG } from "qrcode.react";
 import Confetti from "react-confetti";
+import AuthService from "../services/auth.service";
 
 const BookingConfirm = () => {
     const { flightId } = useParams();
@@ -118,9 +119,11 @@ const BookingConfirm = () => {
             setShowConfetti(true);
 
             // Create booking
+            const currentUser = AuthService.getCurrentUser();
             const bookingId = `SKY${Date.now().toString().slice(-8)}`;
             const bookingData = {
                 id: bookingId,
+                userId: currentUser ? currentUser.id : "guest", // Associate booking with user
                 flight: flight,
                 passenger: passenger,
                 paymentMethod: paymentMethod,

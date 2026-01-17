@@ -6,6 +6,7 @@ import { QRCodeSVG } from "qrcode.react";
 import { generateTicketPDF, generateBoardingPassPDF } from "../utils/pdfUtils";
 import { calculateFlightDuration, getDistance, AIRLINES } from "../utils/flightUtils";
 import { Calendar, Clock, MapPin, Download, User, Plane, CreditCard, CalendarDays, Ticket, ChevronRight, QrCode, Bell, Info, X } from "lucide-react";
+import AuthService from "../services/auth.service";
 
 const MyBookings = () => {
     const [bookings, setBookings] = useState([]);
@@ -13,30 +14,46 @@ const MyBookings = () => {
     const [activeFilter, setActiveFilter] = useState("all");
     const [selectedBooking, setSelectedBooking] = useState(null);
     const [showBoardingPass, setShowBoardingPass] = useState(false);
+    const currentUser = AuthService.getCurrentUser();
 
     useEffect(() => {
         // Simulate API call with setTimeout
         setTimeout(() => {
             const storedBookings = JSON.parse(localStorage.getItem("skywings_bookings") || "[]");
-            // Add more realistic mock data if empty
             let bookingsData = storedBookings;
 
-            if (bookingsData.length === 0) {
-                bookingsData = generateMockBookings();
-                localStorage.setItem("skywings_bookings", JSON.stringify(bookingsData));
+            // Filter bookings for the current user
+            if (currentUser) {
+                // Check if we need to initialize mock data for this user
+                const userBookings = storedBookings.filter(b => b.userId === currentUser.id);
+
+                if (userBookings.length === 0 && storedBookings.length === 0) {
+                    // Only generate mock data if NO bookings exist at all (fresh start), 
+                    // and assign them to this user for demo purposes.
+                    // Or better: check if this specific user has no bookings, maybe generate some?
+                    // For now, let's keep the logic: if DB empty, gen mock for current user.
+                    const mockData = generateMockBookings(currentUser.id);
+                    localStorage.setItem("skywings_bookings", JSON.stringify([...storedBookings, ...mockData]));
+                    bookingsData = mockData;
+                } else {
+                    bookingsData = userBookings;
+                }
+            } else {
+                bookingsData = []; // No user logged in, no bookings
             }
 
             const sorted = bookingsData.sort((a, b) => new Date(b.bookingTime) - new Date(a.bookingTime));
             setBookings(sorted);
             setLoading(false);
         }, 800);
-    }, []);
+    }, [currentUser]);
 
 
-    const generateMockBookings = () => {
+    const generateMockBookings = (userId) => {
         return [
             {
                 id: `SKY${Date.now().toString().slice(-8)}`,
+                userId: userId,
                 flight: {
                     airline: "Air India",
                     airlineLogo: AIRLINES.find(a => a.code === "AI").logo,
@@ -65,6 +82,7 @@ const MyBookings = () => {
             },
             {
                 id: `SKY${Date.now().toString().slice(-9, -1)}`,
+                userId: userId,
                 flight: {
                     airline: "IndiGo",
                     airlineLogo: AIRLINES.find(a => a.code === "6E").logo,
@@ -93,6 +111,7 @@ const MyBookings = () => {
             },
             {
                 id: `SKY${Date.now().toString().slice(-10, -2)}`,
+                userId: userId,
                 flight: {
                     airline: "Vistara",
                     airlineLogo: AIRLINES.find(a => a.code === "UK").logo,
