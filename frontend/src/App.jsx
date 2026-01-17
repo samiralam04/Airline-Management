@@ -7,6 +7,7 @@ import FlightDetails from "./pages/FlightDetails";
 import BookingConfirm from "./pages/BookingConfirm";
 import MyBookings from "./pages/MyBookings";
 import AdminDashboard from "./pages/AdminDashboard";
+import Home from "./pages/Home";
 
 import ProtectedRoute from "./components/ProtectedRoute";
 
@@ -50,15 +51,5 @@ function App() {
     </div>
   );
 }
-
-const Home = () => (
-  <div className="text-center mt-20">
-    <h1 className="text-4xl font-bold text-gray-900 dark:text-white mb-4">Welcome to SkyWings Airline Management</h1>
-    <p className="text-gray-600 dark:text-gray-400 text-lg mb-8">Your journey begins here.</p>
-    <a href="/flights" className="text-white bg-blue-700 hover:bg-blue-800 font-medium rounded-lg text-lg px-6 py-3 dark:bg-blue-600 dark:hover:bg-blue-700">
-      Search Flights
-    </a>
-  </div>
-);
 
 export default App;
