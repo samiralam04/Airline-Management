@@ -2,13 +2,17 @@ import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import jsPDF from "jspdf";
 import "jspdf-autotable";
+import { QRCodeSVG } from "qrcode.react";
+import { generateTicketPDF, generateBoardingPassPDF } from "../utils/pdfUtils";
 import { calculateFlightDuration, getDistance, AIRLINES } from "../utils/flightUtils";
-import { Calendar, Clock, MapPin, Download, User, Plane, CreditCard, CalendarDays, Ticket, ChevronRight, QrCode, Bell, Info } from "lucide-react";
+import { Calendar, Clock, MapPin, Download, User, Plane, CreditCard, CalendarDays, Ticket, ChevronRight, QrCode, Bell, Info, X } from "lucide-react";
 
 const MyBookings = () => {
     const [bookings, setBookings] = useState([]);
     const [loading, setLoading] = useState(true);
     const [activeFilter, setActiveFilter] = useState("all");
+    const [selectedBooking, setSelectedBooking] = useState(null);
+    const [showBoardingPass, setShowBoardingPass] = useState(false);
 
     useEffect(() => {
         // Simulate API call with setTimeout
@@ -152,49 +156,12 @@ const MyBookings = () => {
     };
 
     const downloadTicket = (booking) => {
-        const doc = new jsPDF();
-        const flight = booking.flight;
-        const passenger = booking.passenger;
+        generateBoardingPassPDF(booking);
+    };
 
-        // Add airline branding
-        doc.setFillColor(0, 51, 102);
-        doc.rect(0, 0, 210, 40, 'F');
-        doc.setTextColor(255, 255, 255);
-        doc.setFontSize(24);
-        doc.text("SKYWINGS AIRLINES", 105, 20, null, null, 'center');
-
-        // Booking header
-        doc.setTextColor(0);
-        doc.setFontSize(18);
-        doc.text("BOARDING PASS", 105, 60, null, null, 'center');
-
-        // Booking info
-        doc.setFontSize(12);
-        doc.text(`Booking Reference: ${booking.id}`, 20, 80);
-        doc.text(`Status: ${booking.status}`, 120, 80);
-
-        // Flight route
-        doc.setFontSize(14);
-        doc.text(`${flight.departureAirport.code} → ${flight.arrivalAirport.code}`, 20, 100);
-        doc.setFontSize(12);
-        doc.text(`Departure: ${formatDate(flight.departureTime)} ${formatTime(flight.departureTime)}`, 20, 110);
-        doc.text(`Arrival: ${formatDate(flight.arrivalTime)} ${formatTime(flight.arrivalTime)}`, 20, 120);
-        doc.text(`Flight: ${flight.flightNumber} | Class: ${passenger.flightClass}`, 20, 130);
-
-        // Passenger info
-        doc.text(`Passenger: ${passenger.name || `${passenger.firstName} ${passenger.lastName}`}`, 20, 150);
-        doc.text(`Seat: ${passenger.seat || 'To be assigned'}`, 120, 150);
-
-        // Payment info
-        doc.text(`Total Paid: ₹${booking.totalAmount.toLocaleString()}`, 20, 170);
-        doc.text(`Payment Method: ${booking.paymentMethod}`, 120, 170);
-
-        // Footer
-        doc.setFontSize(10);
-        doc.setTextColor(100);
-        doc.text("Present this at check-in with valid photo ID", 105, 270, null, null, 'center');
-
-        doc.save(`SkyWings-BoardingPass-${booking.id}.pdf`);
+    const handleViewBoardingPass = (booking) => {
+        setSelectedBooking(booking);
+        setShowBoardingPass(true);
     };
 
     const canCancel = (bookingTime) => {
@@ -529,7 +496,10 @@ const MyBookings = () => {
                                                     </button>
 
                                                     {booking.status === 'CONFIRMED' && (
-                                                        <button className="w-full flex items-center justify-center gap-2 px-4 py-3 border-2 border-blue-600 text-blue-600 hover:bg-blue-50 dark:hover:bg-blue-900/20 font-semibold rounded-lg transition-colors">
+                                                        <button
+                                                            onClick={() => handleViewBoardingPass(booking)}
+                                                            className="w-full flex items-center justify-center gap-2 px-4 py-3 border-2 border-blue-600 text-blue-600 hover:bg-blue-50 dark:hover:bg-blue-900/20 font-semibold rounded-lg transition-colors"
+                                                        >
                                                             <QrCode className="w-4 h-4" />
                                                             View Digital Boarding Pass
                                                         </button>
@@ -580,7 +550,157 @@ const MyBookings = () => {
                     </div>
                 )}
             </div>
-        </div>
+
+            {/* Digital Boarding Pass Modal */}
+            {showBoardingPass && selectedBooking && (
+                <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-fade-in">
+                    <div className="bg-white dark:bg-gray-800 rounded-2xl w-full max-w-4xl shadow-2xl overflow-hidden relative">
+                        {/* Close Button */}
+                        <button
+                            onClick={() => setShowBoardingPass(false)}
+                            className="absolute top-4 right-4 p-2 bg-gray-100 dark:bg-gray-700 rounded-full hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors z-10"
+                        >
+                            <X className="w-6 h-6 text-gray-600 dark:text-gray-300" />
+                        </button>
+
+                        <div className="p-8">
+                            <h2 className="text-2xl font-bold text-center mb-8 text-gray-900 dark:text-white">
+                                Boarding Pass (Web Check-in)
+                            </h2>
+
+                            {/* Boarding Pass Container mimicking the IndiGo style */}
+                            <div className="flex flex-col md:flex-row border-2 border-dashed border-gray-300 rounded-xl overflow-hidden bg-white text-black">
+
+                                {/* Left Section (Main) */}
+                                <div className="flex-1 p-6 border-b md:border-b-0 md:border-r-2 border-dashed border-gray-300 relative">
+                                    <div className="flex justify-between items-start mb-6">
+                                        <div>
+                                            <div className="text-xl font-bold text-blue-700">SkyWings</div>
+                                            <div className="text-sm font-semibold text-gray-600">Boarding Pass</div>
+                                        </div>
+                                        <div className="text-right">
+                                            <div className="text-xs text-gray-500 uppercase">Gateway to Gateway</div>
+                                            <div className="font-bold">
+                                                {selectedBooking?.flight?.departureAirport?.city} To {selectedBooking?.flight?.arrivalAirport?.city} ({selectedBooking?.flight?.arrivalAirport?.terminal})
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div className="mb-6">
+                                        <div className="text-sm text-gray-500 uppercase">Passenger Name</div>
+                                        <div className="text-lg font-bold uppercase">
+                                            {selectedBooking?.passenger?.name || `${selectedBooking?.passenger?.firstName} ${selectedBooking?.passenger?.lastName}`}
+                                        </div>
+                                    </div>
+
+                                    <div className="grid grid-cols-4 gap-4 mb-6">
+                                        <div>
+                                            <div className="text-xs text-gray-500 uppercase">Flight</div>
+                                            <div className="font-bold text-lg">{selectedBooking?.flight?.flightNumber}</div>
+                                        </div>
+                                        <div>
+                                            <div className="text-xs text-gray-500 uppercase">Gate</div>
+                                            <div className="font-bold text-lg">9</div>
+                                        </div>
+                                        <div className="col-span-2">
+                                            <div className="text-xs text-gray-500 uppercase">Boarding Time</div>
+                                            <div className="font-bold text-lg bg-yellow-100 dark:bg-yellow-900/30 px-2 rounded inline-block">
+                                                {selectedBooking?.flight?.departureTime ? new Date(new Date(selectedBooking.flight.departureTime).getTime() - 45 * 60000).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: false }) : '00:00'} Hrs
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div className="grid grid-cols-4 gap-4 mb-6">
+                                        <div>
+                                            <div className="text-xs text-gray-500 uppercase">Date</div>
+                                            <div className="font-bold">
+                                                {selectedBooking?.flight?.departureTime ? new Date(selectedBooking.flight.departureTime).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' }) : 'N/A'}
+                                            </div>
+                                        </div>
+                                        <div>
+                                            <div className="text-xs text-gray-500 uppercase">Class</div>
+                                            <div className="font-bold">{selectedBooking?.passenger?.flightClass === 'Business' ? 'BUS' : 'ECO'}</div>
+                                        </div>
+                                        <div className="col-span-2">
+                                            <div className="text-xs text-gray-500 uppercase">Seat</div>
+                                            <div className="font-bold text-3xl text-blue-700">{selectedBooking?.passenger?.seat || '12D'}</div>
+                                        </div>
+                                    </div>
+
+                                    <div className="flex items-center gap-4">
+                                        <div className="bg-white p-2 border border-blue-100 rounded-lg shadow-sm">
+                                            <QRCodeSVG value={`SKYWINGS-BP-${selectedBooking?.id}`} size={80} />
+                                        </div>
+                                        <div className="text-xs text-gray-400 max-w-[200px]">
+                                            Gate is subject to change and will close 25 minutes prior to departure.
+                                        </div>
+                                    </div>
+                                </div>
+
+                                {/* Right Section (Stub) */}
+                                <div className="w-full md:w-64 p-6 bg-gray-50 flex flex-col justify-between">
+                                    <div>
+                                        <div className="text-sm font-bold text-gray-900 mb-4 uppercase text-right">
+                                            {selectedBooking?.passenger?.name || `${selectedBooking?.passenger?.firstName} ${selectedBooking?.passenger?.lastName}`}
+                                        </div>
+
+                                        <div className="flex justify-between items-center mb-4">
+                                            <div className="text-xl font-bold">{selectedBooking?.flight?.departureAirport?.code}</div>
+                                            <div className="text-gray-400">→</div>
+                                            <div className="text-xl font-bold">{selectedBooking?.flight?.arrivalAirport?.code}</div>
+                                        </div>
+
+                                        <div className="space-y-3 text-sm">
+                                            <div className="flex justify-between">
+                                                <span className="text-gray-500">Flight</span>
+                                                <span className="font-bold">{selectedBooking?.flight?.flightNumber}</span>
+                                            </div>
+                                            <div className="flex justify-between">
+                                                <span className="text-gray-500">Date</span>
+                                                <span className="font-bold">
+                                                    {selectedBooking?.flight?.departureTime ? new Date(selectedBooking.flight.departureTime).toLocaleDateString('en-GB', { day: 'numeric', month: 'short' }) : 'N/A'}
+                                                </span>
+                                            </div>
+                                            <div className="flex justify-between">
+                                                <span className="text-gray-500">PNR</span>
+                                                <span className="font-bold">{selectedBooking?.id?.substring(0, 6)}</span>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div className="mt-6 pt-6 border-t border-dashed border-gray-300">
+                                        <div className="flex items-center justify-between">
+                                            <QRCodeSVG value={`SKYWINGS-BP-${selectedBooking?.id}`} size={50} />
+                                            <div className="text-right">
+                                                <div className="text-xs text-gray-500 uppercase">Seat</div>
+                                                <div className="text-2xl font-bold text-blue-700">{selectedBooking?.passenger?.seat || '12D'}</div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div className="mt-8 flex justify-center gap-4">
+                                <button
+                                    onClick={() => generateBoardingPassPDF(selectedBooking)}
+                                    className="px-8 py-3 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-lg shadow-lg flex items-center gap-2 transition-transform transform hover:scale-105"
+                                >
+                                    <Download className="w-5 h-5" />
+                                    Download PDF
+                                </button>
+                                <button
+                                    onClick={() => setShowBoardingPass(false)}
+                                    className="px-8 py-3 bg-gray-200 hover:bg-gray-300 text-gray-800 font-semibold rounded-lg flex items-center gap-2 transition-colors"
+                                >
+                                    Close
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            )
+            }
+        </div >
     );
 };
 

@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { useParams, useNavigate, useLocation } from "react-router-dom";
 import jsPDF from "jspdf";
 import "jspdf-autotable";
+import { generateTicketPDF } from "../utils/pdfUtils";
 import { QRCodeSVG } from "qrcode.react";
 import Confetti from "react-confetti";
 
@@ -147,43 +148,18 @@ const BookingConfirm = () => {
     const downloadTicket = () => {
         if (!flight) return;
 
-        const doc = new jsPDF();
+        const bookingData = {
+            id: `SKY${Date.now().toString().slice(-8)}`, // Generate a temporary ID if not saved yet, or use saved one
+            flight: flight,
+            passenger: passenger,
+            paymentMethod: paymentMethod,
+            totalAmount: calculateTotal(),
+            bookingTime: new Date().toISOString(),
+            status: "CONFIRMED",
+            baggage: "15kg Check-in, 7kg Cabin"
+        };
 
-        // Add airline branding
-        doc.setFillColor(0, 51, 102);
-        doc.rect(0, 0, 210, 40, 'F');
-        doc.setTextColor(255, 255, 255);
-        doc.setFontSize(24);
-        doc.text("SKYWINGS AIRLINES", 105, 20, null, null, 'center');
-
-        // Ticket header
-        doc.setTextColor(0);
-        doc.setFontSize(18);
-        doc.text("ELECTRONIC TICKET RECEIPT", 105, 60, null, null, 'center');
-
-        // Passenger info
-        doc.setFontSize(12);
-        doc.text("PASSENGER INFORMATION", 20, 80);
-        doc.text(`Name: ${passenger.firstName} ${passenger.lastName}`, 20, 90);
-        doc.text(`Booking Reference: SKY${Date.now().toString().slice(-8)}`, 20, 100);
-
-        // Flight info
-        doc.text("FLIGHT INFORMATION", 20, 120);
-        doc.text(`${flight.departureAirport.code} → ${flight.arrivalAirport.code}`, 20, 130);
-        doc.text(`${new Date(flight.departureTime).toLocaleDateString()} | ${new Date(flight.departureTime).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}`, 20, 140);
-        doc.text(`Flight: ${flight.flightNumber} | Class: ${passenger.flightClass}`, 20, 150);
-
-        // Price
-        doc.setFontSize(16);
-        doc.setTextColor(0, 100, 0);
-        doc.text(`Total Paid: ₹${calculateTotal().toLocaleString()}`, 20, 180);
-
-        // Footer
-        doc.setFontSize(10);
-        doc.setTextColor(100);
-        doc.text("Present this at check-in with valid photo ID", 105, 270, null, null, 'center');
-
-        doc.save(`SkyWings-Ticket-${flight.flightNumber}.pdf`);
+        generateTicketPDF(bookingData);
     };
 
     if (!flight) {
