@@ -58,26 +58,17 @@ const AirportSearch = ({ label, onSelect, initialValue, className = '', showSele
 
         if (value.trim().length > 1) {
             setLoading(true);
-            debounceTimeout.current = setTimeout(() => {
-                // Mock API call - in real app, this would be AirportService.searchAirports
-                const mockResults = [
-                    { id: 1, code: "DEL", city: "Delhi", name: "Indira Gandhi International Airport", country: "India" },
-                    { id: 2, code: "BOM", city: "Mumbai", name: "Chhatrapati Shivaji Maharaj International Airport", country: "India" },
-                    { id: 3, code: "BLR", city: "Bengaluru", name: "Kempegowda International Airport", country: "India" },
-                    { id: 4, code: "MAA", city: "Chennai", name: "Chennai International Airport", country: "India" },
-                    { id: 5, code: "HYD", city: "Hyderabad", name: "Rajiv Gandhi International Airport", country: "India" },
-                    { id: 6, code: "GOI", city: "Goa", name: "Goa International Airport", country: "India" },
-                    { id: 7, code: "CCU", city: "Kolkata", name: "Netaji Subhas Chandra Bose International Airport", country: "India" },
-                    { id: 8, code: "PNQ", city: "Pune", name: "Pune Airport", country: "India" }
-                ].filter(airport =>
-                    airport.city.toLowerCase().includes(value.toLowerCase()) ||
-                    airport.code.toLowerCase().includes(value.toLowerCase()) ||
-                    airport.name.toLowerCase().includes(value.toLowerCase())
-                );
-
-                setResults(mockResults);
-                setLoading(false);
-                setShowDropdown(true);
+            debounceTimeout.current = setTimeout(async () => {
+                try {
+                    const response = await AirportService.searchAirports(value);
+                    setResults(response.data);
+                } catch (error) {
+                    console.error("Error fetching airports:", error);
+                    setResults([]);
+                } finally {
+                    setLoading(false);
+                    setShowDropdown(true);
+                }
             }, 300);
         } else {
             setResults([]);

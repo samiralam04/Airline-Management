@@ -8,6 +8,8 @@ import BookingConfirm from "./pages/BookingConfirm";
 import MyBookings from "./pages/MyBookings";
 import AdminDashboard from "./pages/AdminDashboard";
 
+import ProtectedRoute from "./components/ProtectedRoute";
+
 function App() {
   return (
     <div className="dark:bg-gray-900 min-h-screen">
@@ -17,9 +19,30 @@ function App() {
           <Route path="/" element={<Home />} />
           <Route path="/flights" element={<FlightSearch />} />
           <Route path="/flights/:id" element={<FlightDetails />} />
-          <Route path="/booking/confirm/:flightId" element={<BookingConfirm />} />
-          <Route path="/bookings" element={<MyBookings />} />
-          <Route path="/admin" element={<AdminDashboard />} />
+          <Route
+            path="/booking/confirm/:flightId"
+            element={
+              <ProtectedRoute>
+                <BookingConfirm />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/bookings"
+            element={
+              <ProtectedRoute>
+                <MyBookings />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/admin"
+            element={
+              <ProtectedRoute>
+                <AdminDashboard />
+              </ProtectedRoute>
+            }
+          />
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
         </Routes>

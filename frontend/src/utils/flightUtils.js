@@ -1,26 +1,32 @@
 
 // Airport coordinates (IATA code -> { lat, lon })
 const AIRPORT_COORDINATES = {
-    DEL: { lat: 28.5562, lon: 77.1000, name: "Delhi" },
-    BOM: { lat: 19.0896, lon: 72.8656, name: "Mumbai" },
-    BLR: { lat: 13.1986, lon: 77.7066, name: "Bengaluru" },
-    MAA: { lat: 12.9941, lon: 80.1709, name: "Chennai" },
-    CCU: { lat: 22.6547, lon: 88.4467, name: "Kolkata" },
-    HYD: { lat: 17.2403, lon: 78.4294, name: "Hyderabad" },
-    AMD: { lat: 23.0738, lon: 72.6347, name: "Ahmedabad" },
-    GOI: { lat: 15.3800, lon: 73.8314, name: "Goa (Dabolim)" },
-    COK: { lat: 10.1518, lon: 76.3930, name: "Kochi" },
-    PNQ: { lat: 18.5821, lon: 73.9197, name: "Pune" },
-    GAU: { lat: 26.1061, lon: 91.5859, name: "Guwahati" },
-    JAI: { lat: 26.8242, lon: 75.8054, name: "Jaipur" },
-    LKO: { lat: 26.7606, lon: 80.8893, name: "Lucknow" },
-    SXR: { lat: 34.0087, lon: 74.7740, name: "Srinagar" },
-    TRV: { lat: 8.4821, lon: 76.9200, name: "Thiruvananthapuram" },
-    IXB: { lat: 26.6857, lon: 88.3224, name: "Bagdogra" },
-    PAT: { lat: 25.5912, lon: 85.0880, name: "Patna" },
-    BBI: { lat: 20.2444, lon: 85.8178, name: "Bhubaneswar" },
-    IND: { lat: 22.7217, lon: 75.8011, name: "Indore" },
-    VNS: { lat: 25.4497, lon: 82.8587, name: "Varanasi" }
+    DEL: { lat: 28.5562, lon: 77.1000, name: "Delhi", country: "India" },
+    BOM: { lat: 19.0896, lon: 72.8656, name: "Mumbai", country: "India" },
+    BLR: { lat: 13.1986, lon: 77.7066, name: "Bengaluru", country: "India" },
+    MAA: { lat: 12.9941, lon: 80.1709, name: "Chennai", country: "India" },
+    CCU: { lat: 22.6547, lon: 88.4467, name: "Kolkata", country: "India" },
+    HYD: { lat: 17.2403, lon: 78.4294, name: "Hyderabad", country: "India" },
+    AMD: { lat: 23.0738, lon: 72.6347, name: "Ahmedabad", country: "India" },
+    GOI: { lat: 15.3800, lon: 73.8314, name: "Goa (Dabolim)", country: "India" },
+    COK: { lat: 10.1518, lon: 76.3930, name: "Kochi", country: "India" },
+    PNQ: { lat: 18.5821, lon: 73.9197, name: "Pune", country: "India" },
+    GAU: { lat: 26.1061, lon: 91.5859, name: "Guwahati", country: "India" },
+    JAI: { lat: 26.8242, lon: 75.8054, name: "Jaipur", country: "India" },
+    LKO: { lat: 26.7606, lon: 80.8893, name: "Lucknow", country: "India" },
+    SXR: { lat: 34.0087, lon: 74.7740, name: "Srinagar", country: "India" },
+    TRV: { lat: 8.4821, lon: 76.9200, name: "Thiruvananthapuram", country: "India" },
+    IXB: { lat: 26.6857, lon: 88.3224, name: "Bagdogra", country: "India" },
+    PAT: { lat: 25.5912, lon: 85.0880, name: "Patna", country: "India" },
+    BBI: { lat: 20.2444, lon: 85.8178, name: "Bhubaneswar", country: "India" },
+    IND: { lat: 22.7217, lon: 75.8011, name: "Indore", country: "India" },
+    VNS: { lat: 25.4497, lon: 82.8587, name: "Varanasi", country: "India" },
+    DXB: { lat: 25.2532, lon: 55.3657, name: "Dubai", country: "UAE" },
+    LHR: { lat: 51.4700, lon: -0.4543, name: "London Heathrow", country: "UK" },
+    JFK: { lat: 40.6413, lon: -73.7781, name: "New York JFK", country: "USA" },
+    SIN: { lat: 1.3644, lon: 103.9915, name: "Singapore Changi", country: "Singapore" },
+    HND: { lat: 35.5494, lon: 139.7798, name: "Tokyo Haneda", country: "Japan" },
+    SYD: { lat: -33.9399, lon: 151.1753, name: "Sydney", country: "Australia" }
 };
 
 // Real airline logos with proper Wikimedia URLs
@@ -29,37 +35,85 @@ export const AIRLINES = [
         name: "IndiGo",
         code: "6E",
         logo: "https://images.seeklogo.com/logo-png/62/1/indigo-logo-png_seeklogo-621349.png",
-        color: "#0D4A8A"
+        color: "#0D4A8A",
+        type: "DOMESTIC"
     },
     {
         name: "Air India",
         code: "AI",
         logo: "https://images.seeklogo.com/logo-png/49/1/air-india-logo-png_seeklogo-498362.png",
-        color: "#FF6B00"
+        color: "#FF6B00",
+        type: "DOMESTIC"
     },
     {
         name: "Vistara",
         code: "UK",
         logo: "https://images.seeklogo.com/logo-png/31/1/vistara-logo-png_seeklogo-317421.png",
-        color: "#0056A4"
+        color: "#0056A4",
+        type: "DOMESTIC"
     },
     {
         name: "SpiceJet",
         code: "SG",
         logo: "https://images.seeklogo.com/logo-png/27/1/spicejet-logo-png_seeklogo-278033.png",
-        color: "#F78F1E"
+        color: "#F78F1E",
+        type: "DOMESTIC"
     },
     {
         name: "AirAsia",
         code: "I5",
         logo: "http://images.seeklogo.com/logo-png/0/1/airasia-logo-png_seeklogo-5230.png",
-        color: "#FF0000"
+        color: "#FF0000",
+        type: "DOMESTIC"
     },
     {
         name: "Akasa Air",
         code: "QP",
         logo: "https://images.seeklogo.com/logo-png/43/1/akasa-air-logo-png_seeklogo-431797.png",
-        color: "#FF6B35"
+        color: "#FF6B35",
+        type: "DOMESTIC"
+    },
+    {
+        name: "Emirates",
+        code: "EK",
+        logo: "https://images.seeklogo.com/logo-png/2/1/emirates-logo-png_seeklogo-2831.png",
+        color: "#D71920",
+        type: "INTERNATIONAL"
+    },
+    {
+        name: "Qatar Airways",
+        code: "QR",
+        logo: "https://images.seeklogo.com/logo-png/3/2/qatar-airways-logo-png_seeklogo-3363.png",
+        color: "#580F31",
+        type: "INTERNATIONAL"
+    },
+    {
+        name: "Singapore Airlines",
+        code: "SQ",
+        logo: "https://images.seeklogo.com/logo-png/33/2/singapore-airlines-logo-png_seeklogo-339237.png",
+        color: "#FDB913",
+        type: "INTERNATIONAL"
+    },
+    {
+        name: "British Airways",
+        code: "BA",
+        logo: "https://images.seeklogo.com/logo-png/8/1/british-airways-logo-png_seeklogo-8255.png",
+        color: "#075AAA",
+        type: "INTERNATIONAL"
+    },
+    {
+        name: "Lufthansa",
+        code: "LH",
+        logo: "https://images.seeklogo.com/logo-png/43/1/lufthansa-logo-png_seeklogo-433433.png",
+        color: "#051642",
+        type: "INTERNATIONAL"
+    },
+    {
+        name: "Etihad",
+        code: "EY",
+        logo: "https://images.seeklogo.com/logo-png/27/2/etihad-airways-logo-png_seeklogo-278297.png",
+        color: "#D0B86F",
+        type: "INTERNATIONAL"
     }
 ];
 
@@ -131,8 +185,32 @@ export const generateMockFlights = (origin, destination, date) => {
     const seed = (origin || "A").charCodeAt(0) + (destination || "B").charCodeAt(0) + new Date(date).getDate();
     const numFlights = 4 + (seed % 5); // 4 to 8 flights
 
+    // Determine if route is domestic (both in India)
+    const originAirport = AIRPORT_COORDINATES[origin];
+    const destinationAirport = AIRPORT_COORDINATES[destination];
+    
+    // Default to India if airport not found (backward compatibility)
+    const isOriginIndia = originAirport ? originAirport.country === "India" : true;
+    const isDestIndia = destinationAirport ? destinationAirport.country === "India" : true;
+    const isDomestic = isOriginIndia && isDestIndia;
+
+    // Filter airlines based on route
+    let availableAirlines = AIRLINES;
+    if (isDomestic) {
+        availableAirlines = AIRLINES.filter(a => a.type === "DOMESTIC");
+    } else {
+        // For international, mix international carriers and major domestic carriers (AI, Vistara, IndiGo)
+        availableAirlines = AIRLINES.filter(a => 
+            a.type === "INTERNATIONAL" || 
+            ["AI", "UK", "6E"].includes(a.code)
+        );
+    }
+
+    // Fallback if no airlines match (shouldn't happen with current data)
+    if (availableAirlines.length === 0) availableAirlines = AIRLINES;
+
     for (let i = 0; i < numFlights; i++) {
-        const airline = AIRLINES[(seed + i) % AIRLINES.length];
+        const airline = availableAirlines[(seed + i) % availableAirlines.length];
         
         // Distribute flights throughout the day
         const minuteOffset = ((seed + i * 17) % 60);

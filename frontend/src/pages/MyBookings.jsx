@@ -182,7 +182,7 @@ const MyBookings = () => {
         doc.text(`Flight: ${flight.flightNumber} | Class: ${passenger.flightClass}`, 20, 130);
 
         // Passenger info
-        doc.text(`Passenger: ${passenger.name}`, 20, 150);
+        doc.text(`Passenger: ${passenger.name || `${passenger.firstName} ${passenger.lastName}`}`, 20, 150);
         doc.text(`Seat: ${passenger.seat || 'To be assigned'}`, 120, 150);
 
         // Payment info
@@ -195,6 +195,35 @@ const MyBookings = () => {
         doc.text("Present this at check-in with valid photo ID", 105, 270, null, null, 'center');
 
         doc.save(`SkyWings-BoardingPass-${booking.id}.pdf`);
+    };
+
+    const canCancel = (bookingTime) => {
+        const bookingDate = new Date(bookingTime);
+        const now = new Date();
+        const diffInHours = (now - bookingDate) / (1000 * 60 * 60);
+        return diffInHours < 24;
+    };
+
+    const handleCancel = (bookingId) => {
+        if (window.confirm("Are you sure you want to cancel this booking?")) {
+            const updatedBookings = bookings.map(b => {
+                if (b.id === bookingId) {
+                    return { ...b, status: "CANCELLED" };
+                }
+                return b;
+            });
+
+            setBookings(updatedBookings);
+            // Update localStorage
+            const storedBookings = JSON.parse(localStorage.getItem("skywings_bookings") || "[]");
+            const updatedStoredBookings = storedBookings.map(b => {
+                if (b.id === bookingId) {
+                    return { ...b, status: "CANCELLED" };
+                }
+                return b;
+            });
+            localStorage.setItem("skywings_bookings", JSON.stringify(updatedStoredBookings));
+        }
     };
 
     return (
@@ -440,7 +469,9 @@ const MyBookings = () => {
                                                     </div>
                                                     <div>
                                                         <div className="text-sm text-gray-500 dark:text-gray-400">Passenger</div>
-                                                        <div className="font-semibold text-gray-900 dark:text-white">{booking.passenger.name}</div>
+                                                        <div className="font-semibold text-gray-900 dark:text-white">
+                                                            {booking.passenger.name || `${booking.passenger.firstName} ${booking.passenger.lastName}`}
+                                                        </div>
                                                     </div>
                                                 </div>
                                                 <div className="flex items-center gap-3">
@@ -501,6 +532,15 @@ const MyBookings = () => {
                                                         <button className="w-full flex items-center justify-center gap-2 px-4 py-3 border-2 border-blue-600 text-blue-600 hover:bg-blue-50 dark:hover:bg-blue-900/20 font-semibold rounded-lg transition-colors">
                                                             <QrCode className="w-4 h-4" />
                                                             View Digital Boarding Pass
+                                                        </button>
+                                                    )}
+
+                                                    {booking.status === 'CONFIRMED' && canCancel(booking.bookingTime) && (
+                                                        <button
+                                                            onClick={() => handleCancel(booking.id)}
+                                                            className="w-full flex items-center justify-center gap-2 px-4 py-3 border-2 border-red-200 text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20 font-semibold rounded-lg transition-colors"
+                                                        >
+                                                            Cancel Booking
                                                         </button>
                                                     )}
 
