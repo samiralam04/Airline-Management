@@ -2,11 +2,16 @@
 
 A comprehensive full-stack airline management application built with Spring Boot (Backend) and React (Frontend).
 
+![Home Page](frontend/src/assets/Home%20page.png)
+
 ## 🚀 Features
 
 - **Flight Search**: Search for flights by origin, destination, and date (with smart airport suggestions).
+  ![Flight Search](frontend/src/assets/flight%20search.png)
 - **Booking System**: Select flights, enter passenger details, and confirm bookings.
+  ![My Bookings](frontend/src/assets/my%20bookings.png)
 - **User Authentication**: Secure login and registration with JWT.
+  ![Login Page](frontend/src/assets/Login%20page.png)
 - **Admin Dashboard**: Manage flights and bookings (Role-based access).
 - **Responsive Design**: Modern UI built with Tailwind CSS.
 
